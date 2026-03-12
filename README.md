@@ -1,51 +1,49 @@
-# Multiplayer Dino Game - AK Embedded Base Kit
+# Multiplayer Space Shooting Game - AK Embedded Base Kit
 
 ## Overview
 
-Multiplayer Dino Game là một trò chơi được xây dựng trên **AK Embedded Base Kit sử dụng vi điều khiển STM32L151**.  
-Dự án được thiết kế nhằm giúp sinh viên thực hành các khái niệm quan trọng trong **lập trình hệ thống nhúng theo mô hình Event-Driven**.
+Multiplayer Space Shooting Game là một trò chơi được phát triển trên **AK Embedded Base Kit sử dụng vi điều khiển STM32L151**.  
 
-Trong quá trình phát triển game, các kỹ thuật sau được áp dụng:
+
+Dự án sử dụng các kỹ thuật sau:
 
 - Event Driven Programming
-- Task & Message Handling
+- Task & Signal Architecture
 - Timer Interrupt
 - State Machine
-- RF Wireless Communication (NRF24L01+)
 - OLED Graphics Rendering
+- RF Wireless Communication (NRF24L01+)
 
-Game hỗ trợ **2 thiết bị chơi với nhau theo thời gian thực** thông qua giao tiếp **RF NRF24L01+**.
+Game hỗ trợ **2 người chơi thông qua kết nối RF** giữa hai kit.
 
 ---
 
 # Hardware
 
-Project sử dụng **AK Embedded Base Kit (STM32L151)**.
-
-Các thành phần phần cứng chính:
+Phần cứng sử dụng:
 
 | Component | Description |
-|----------|-------------|
+|-----------|-------------|
 | STM32L151 | Main MCU |
-| OLED 1.3" | Hiển thị game |
+| OLED 1.3" | Hiển thị đồ họa game |
 | Buttons (3) | Điều khiển game |
 | Buzzer | Phát âm thanh |
-| NRF24L01+ | Giao tiếp RF Multiplayer |
+| NRF24L01+ | Kết nối Multiplayer |
 | Flash 32MB | Lưu trữ dữ liệu |
 
 ---
 
 # Game Objects
 
-Trong trò chơi có các đối tượng sau:
+Các đối tượng trong game:
 
 | Object | Name | Description |
 |------|------|-------------|
-| Player | Dino | Nhân vật chính |
-| Obstacle | Cactus | Chướng ngại vật trên mặt đất |
-| Enemy | Bird | Chướng ngại vật trên không |
-| Item | Gift | Vật phẩm tấn công đối thủ |
-| Background | Cloud | Đám mây nền tạo hiệu ứng |
+| Player | Spaceship | Tàu vũ trụ của người chơi |
+| Enemy | Alien | Kẻ địch bay từ phải sang |
+| Obstacle | Asteroid | Thiên thạch cần né |
+| Bullet | Laser | Đạn của người chơi |
+| Background | Star | Hiệu ứng nền |
 
 ---
 
@@ -53,44 +51,49 @@ Trong trò chơi có các đối tượng sau:
 
 Game được chơi trên **2 thiết bị**.
 
-Một thiết bị đóng vai trò **MASTER** để bắt đầu game.
+Một thiết bị đóng vai trò **MASTER**.
+
+MASTER nhấn nút **MODE** để bắt đầu game.
 
 ### Control Buttons
 
-| Button | Action |
+| Button | Function |
 |------|------|
-| UP | Nhảy |
-| DOWN | Cúi xuống |
-| MODE | Bắt đầu game |
+| UP | Di chuyển lên |
+| DOWN | Di chuyển xuống |
+| MODE | Bắn đạn |
 
-### Game Objective
+---
 
-- Né chướng ngại vật
-- Thu thập Gift
+# Game Objective
+
+Người chơi cần:
+
+- Né thiên thạch
+- Bắn kẻ địch
 - Sống càng lâu càng tốt
 - Đạt điểm cao nhất
 
 ---
 
-# Game Mechanism
-
-## Score System
+# Score System
 
 | Action | Score |
 |------|------|
-| Pass Cactus | +1 |
-| Pass Bird | +1 |
-| Collect Gift | +5 |
+| Destroy enemy | +3 |
+| Avoid asteroid | +1 |
 
 ---
 
-## Difficulty System
+# Difficulty System
 
 Tốc độ ban đầu:
-Speed = 35
 
 
-Mỗi **15 điểm**:
+Speed = 30
+
+
+Mỗi khi đạt **10 điểm**:
 
 
 Speed += 5
@@ -104,19 +107,21 @@ Max Speed = 60
 
 ---
 
-# Multiplayer Attack
+# Multiplayer Attack System
 
-Khi người chơi ăn **Gift**, thiết bị sẽ gửi lệnh RF:
+Khi người chơi tiêu diệt **Special Enemy**, hệ thống sẽ gửi lệnh RF:
+
+
 CMD_ATTACK
 
 
 Thiết bị đối thủ sẽ:
 
-- Tăng tốc độ game
+- Tăng tốc game
 - Màn hình nhấp nháy
 - Phát âm thanh cảnh báo
 
-Thời gian hiệu lực:
+Hiệu lực trong:
 
 
 3 seconds
@@ -126,10 +131,10 @@ Thời gian hiệu lực:
 
 # Game Over Condition
 
-Game kết thúc khi Dino va chạm:
+Game kết thúc khi:
 
-- Cactus
-- Bird
+- Spaceship va chạm Asteroid
+- Spaceship bị Enemy bắn trúng
 
 Thiết bị sẽ gửi lệnh:
 
@@ -137,13 +142,13 @@ Thiết bị sẽ gửi lệnh:
 CMD_I_DIED
 
 
-Thiết bị còn lại hiển thị:
+Máy còn lại hiển thị:
 
 
 YOU WIN
 
 
-Thiết bị thua hiển thị:
+Máy thua hiển thị:
 
 
 YOU LOSE
@@ -153,16 +158,16 @@ YOU LOSE
 
 # System Architecture
 
-Game được xây dựng theo **Event Driven Architecture**.
+Game được thiết kế theo **Event Driven Architecture**.
 
 Các thành phần chính:
 
-| Component | Role |
-|----------|------|
-| Task | Nhận và xử lý message |
-| Signal | Nội dung message |
-| Message | Gửi công việc giữa các task |
-| Handler | Xử lý logic |
+| Component | Description |
+|----------|-------------|
+| Task | Thực hiện xử lý logic |
+| Signal | Nội dung của message |
+| Message | Truyền thông tin giữa các task |
+| Handler | Xử lý sự kiện |
 
 ---
 
@@ -170,14 +175,18 @@ Các thành phần chính:
 
 Game chạy theo chu kỳ **10ms Timer Tick**
 
-Flow:
+Flow hoạt động:
+
+
 Timer Tick
 ↓
 Read Buttons
 ↓
 RF Receive
 ↓
-Update Game Logic
+Update Player
+↓
+Update Objects
 ↓
 Collision Detection
 ↓
@@ -185,20 +194,19 @@ Render OLED
 ↓
 Restart Timer
 
+
 ---
 
 # Data Structures
 
-## Dino Object
+## Player Structure
 
 ```c
 typedef struct {
     int16_t y;
-    int16_t v_y;
-    bool is_jumping;
-    bool is_ducking;
-} dino_t;
-
+    int16_t speed;
+    bool shooting;
+} player_t;
 Game Object
 typedef struct {
     int32_t x;
@@ -208,14 +216,14 @@ typedef struct {
     uint8_t type;
     bool active;
 } game_obj_t;
-
 Game Variables
-dino_t dino;
-game_obj_t objects[4];
-bg_obj_t bgs[1];
+player_t player;
+game_obj_t objects[5];
+bg_obj_t stars[3];
 RF Communication
 Send Command
 void rf_send_cmd(uint8_t cmd) {
+
     uint8_t tx_buf[1] = {cmd};
 
     nRF24_TXMode(...);
@@ -229,54 +237,48 @@ uint8_t rx_data;
 if(nRF24_RXPacket(&rx_data,1)) {
 
     if(rx_data == CMD_START)
-        dino_reset();
-
-    if(rx_data == CMD_I_DIED)
-        mp_state = MP_WIN;
+        game_reset();
 
     if(rx_data == CMD_ATTACK)
         attack_timer = 300;
-}
 
+    if(rx_data == CMD_I_DIED)
+        mp_state = MP_WIN;
+}
 Graphics
 
 Game sử dụng bitmap graphics hiển thị trên OLED.
-
-| Bitmap | Size  |
-| ------ | ----- |
-| Dino   | 16x16 |
-| Cactus | 8x16  |
-| Bird   | 16x8  |
-| Gift   | 8x8   |
-| Cloud  | 16x8  |
-
+| Object    | Size  |
+| --------- | ----- |
+| Spaceship | 16x16 |
+| Enemy     | 16x16 |
+| Asteroid  | 12x12 |
+| Bullet    | 4x4   |
+| Star      | 2x2   |
 
 Render Screen
-void view_scr_dino_game() {
+void view_game_screen() {
 
     view_render.clear();
 
     draw_background();
+    draw_player();
     draw_objects();
-    draw_dino();
     draw_score();
 
     view_render.update();
 }
-
 Sound System
 
-Buzzer hoạt động theo chế độ Non-blocking.
-| Sound         | Description     |
-| ------------- | --------------- |
-| tones_cc      | Khi ăn Gift     |
-| tones_startup | Khi bị tấn công |
-| tones_3beep   | Game Over       |
+Buzzer sử dụng Non-blocking audio.
 
-
+Sound	Description
+tones_shoot	bắn đạn
+tones_hit	bắn trúng địch
+tones_attack	bị tấn công
+tones_gameover	game over
 Project Structure
-
-Multiplayer-Dino-Game
+Space-Shooting-Game
 │
 ├── src
 │   ├── main.c
@@ -290,7 +292,9 @@ Multiplayer-Dino-Game
 │   ├── display.h
 │
 ├── assets
-│   ├── bitmap_dino.h
-│   ├── bitmap_cactus.h
+│   ├── bitmap_spaceship.h
+│   ├── bitmap_enemy.h
+│
+└── README.md
 │
 └── README.md
