@@ -4,7 +4,7 @@
 #include "ar_game_archery.h"
 
 ar_game_border_t border;
-uint32_t ar_game_score = 0;
+uint32_t ar_game_score = 10;
 
 #define AR_GAME_BORDER_SETUP() \
 do { \
@@ -15,9 +15,9 @@ do { \
 
 #define AR_GAME_LEVEL_UP() \
 do { \
-    if (ar_game_score > 0 && ar_game_score%100 == 0) { \
+    if (ar_game_score%200 == 0) { \
         /* border.x += 10; */\
-        if (settingsetup.meteoroid_speed < 10) { \
+        if (settingsetup.meteoroid_speed < 6) { \
             settingsetup.meteoroid_speed++; \
             ar_game_score += 10; \
         } \

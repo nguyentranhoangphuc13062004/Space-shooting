@@ -26,10 +26,19 @@
 #define AXIS_Y_METEOROID_3          (32)
 #define AXIS_Y_METEOROID_4          (42)
 
+
+#define METEOROID_LV1  (1)
+#define METEOROID_LV2  (2)
+#define METEOROID_LV3  (3)
+#define SCORE_LV2      (20)
+#define SCORE_LV3      (40)
+
 typedef struct {
     bool visible;
     uint32_t x, y;
     uint8_t action_image;
+    uint8_t level;
+    uint8_t hp;
 } ar_game_meteoroid_t;
 
 extern ar_game_meteoroid_t meteoroid[NUM_METEOROIDS];

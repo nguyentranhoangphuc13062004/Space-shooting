@@ -44,7 +44,7 @@ struct menu_items{
 
 // Menu items name
 static char menu_items_name[NUMBER_MENU_ITEMS][20] = {
-	"   Archery Game   ",		// item 1
+	"  Space Shooting  ",		// item 1
 	"   Setting        ",		// item 2
 	"   Charts         ",		// item 3
 	"   Exit           ",		// item 4
@@ -52,7 +52,7 @@ static char menu_items_name[NUMBER_MENU_ITEMS][20] = {
 
 // Menu items icon
 static const uint8_t *menu_items_icon[NUMBER_MENU_ITEMS] = {
-	archery_icon,				// item 1
+	bitmap_archery_I,				// item 1
 	setting_icon,				// item 2
 	chart_icon,					// item 3
 	exit_icon,					// item 4
