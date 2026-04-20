@@ -123,7 +123,10 @@ Timer one-shot ──SS_GAME_EXIT──► Screen
                                        → chuyển sang màn hình Game Over
                                           (Restart / Charts / Home)
 
-3
+<p align="center">
+  <img src="resources/images/exit.png" alt="Sơ đồ khởi tạo" width="800"/>
+</p>
+
 [
 
 
