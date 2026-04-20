@@ -89,6 +89,8 @@ Flow từng bước:
 9. ss_game_status = GAME_ON
 Điểm thiết kế tốt: Tách biệt hoàn toàn việc setup từng object — nếu muốn thêm object mới chỉ cần thêm 1 signal SETUP, không đụng code cũ.
 
+/home/hoangphuc/archery-game/resources/images/screen.png
+
 GIAI ĐOẠN 2 — GAME PLAY (Vòng lặp game)
 Đây là trái tim của game. Mỗi 100ms Timer bắn TIME_TICK vào Screen, Screen lần lượt điều phối toàn bộ hệ thống.
 2A. Normal — Cập nhật tự động mỗi 100ms
@@ -102,8 +104,10 @@ Timer ──SS_GAME_TIME_TICK──► Screen
                               ├──► SS_GAME_EXPLOSION_UPDATE  → cập nhật frame animation nổ
                               ├──► SS_GAME_BORDER_UPDATE     → kiểm tra score, tăng tốc nếu đủ 200đ
                               └──► SS_GAME_CHECK_GAME_OVER   → enemy chạm border? → gửi SS_GAME_RESET
-Vai trò từng Signal:
-SignalVai tròAi nhậnTIME_TICKNhịp tim 100ms, kích hoạt toàn bộ vòng lặpScreenSPACESHIP_UPDATEĐồng bộ vị trí Y thực tế với biến spaceship_ySpaceship TaskBULLET_RUNTăng tọa độ X của từng bullet đang bayBullet TaskENEMY_RUNGiảm tọa độ X của enemy + đổi frame animationEnemy TaskENEMY_DETONATORVa chạm detection: bullet.x ≈ enemy.x && bullet.y ≈ enemy.yEnemy TaskEXPLOSION_UPDATEChạy 3 frame animation rồi tự ẩnExplosion TaskBORDER_UPDATENếu score tăng thêm 200 → tăng enemy speedBorder TaskCHECK_GAME_OVERNếu enemy.x ≤ border.x → gửi RESET về ScreenBorder Task
+
+/home/hoangphuc/archery-game/resources/images/gameplay.png
+
+
 2B. Action — Phản ứng khi player nhấn nút
 [Up]   ──► SS_GAME_SPACESHIP_UP    → spaceship_y -= STEP (giới hạn min = 10)
 [Down] ──► SS_GAME_SPACESHIP_DOWN  → spaceship_y += STEP (giới hạn max = 50)
@@ -125,6 +129,8 @@ Border ──SS_GAME_RESET──► Screen
                            ├── Timer TIME_TICK xóa (dừng vòng lặp game)
                            └── Tạo Timer one-shot EXIT (~1-2 giây delay)
 Tại sao cần Timer one-shot? Để player kịp thấy màn hình "YOU LOSE" trước khi chuyển sang Game Over screen. Nếu chuyển ngay, player sẽ không biết mình vừa thua.
+
+/home/hoangphuc/archery-game/resources/images/reset.png
 
 GIAI ĐOẠN 4 — EXIT (Chuyển màn hình)
 Timer one-shot ──SS_GAME_EXIT──► Screen
