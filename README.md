@@ -89,48 +89,31 @@ Flow từng bước:
 9. ss_game_status = GAME_ON
 Điểm thiết kế tốt: Tách biệt hoàn toàn việc setup từng object — nếu muốn thêm object mới chỉ cần thêm 1 signal SETUP, không đụng code cũ.
 
-/home/hoangphuc/archery-game/resources/images/screen.png
+<p align="center">
+  <img src="resources/images/screen.png" alt="Sơ đồ khởi tạo" width="800"/>
+</p>
 
 GIAI ĐOẠN 2 — GAME PLAY (Vòng lặp game)
 Đây là trái tim của game. Mỗi 100ms Timer bắn TIME_TICK vào Screen, Screen lần lượt điều phối toàn bộ hệ thống.
-2A. Normal — Cập nhật tự động mỗi 100ms
-Timer ──SS_GAME_TIME_TICK──► Screen
-                              │
-                              ├──► SS_GAME_SPACESHIP_UPDATE  → cập nhật vị trí Y của tàu
-                              ├──► SS_GAME_BULLET_RUN        → dịch chuyển bullet sang phải
-                              ├──► SS_GAME_ENEMY_RUN         → dịch chuyển enemy sang trái
-                              ├──► SS_GAME_ENEMY_DETONATOR   → kiểm tra bullet có chạm enemy?
-                              │                                  nếu có → reset cả 2, tạo Explosion
-                              ├──► SS_GAME_EXPLOSION_UPDATE  → cập nhật frame animation nổ
-                              ├──► SS_GAME_BORDER_UPDATE     → kiểm tra score, tăng tốc nếu đủ 200đ
-                              └──► SS_GAME_CHECK_GAME_OVER   → enemy chạm border? → gửi SS_GAME_RESET
-
-/home/hoangphuc/archery-game/resources/images/gameplay.png
 
 
-2B. Action — Phản ứng khi player nhấn nút
-[Up]   ──► SS_GAME_SPACESHIP_UP    → spaceship_y -= STEP (giới hạn min = 10)
-[Down] ──► SS_GAME_SPACESHIP_DOWN  → spaceship_y += STEP (giới hạn max = 50)
-[Mode] ──► SS_GAME_BULLET_SHOOT    → tìm bullet đang ẩn, đặt x=spaceship.x, y=spaceship.y
-                                      nếu num_bullet == 0 → phát âm thanh cảnh báo, không bắn
-Lưu ý thiết kế: spaceship_y là biến riêng nội bộ, chỉ được đồng bộ vào spaceship.y khi nhận SPACESHIP_UPDATE. Điều này đảm bảo vị trí hiển thị luôn nhất quán theo nhịp 100ms, tránh giật hình.
+<p align="center">
+  <img src="resources/images/gameplay.png" alt="Sơ đồ khởi tạo" width="800"/>
+</p>
+
+
+
 
 GIAI ĐOẠN 3 — RESET GAME (Xử lý Game Over)
 Trigger: Border phát hiện enemy.x ≤ border.x → gửi SS_GAME_RESET lên Screen.
-Border ──SS_GAME_RESET──► Screen
-                           │
-                           ├── ss_game_status = GAME_OVER  (hiện "YOU LOSE" trên OLED)
-                           ├──► SS_GAME_SPACESHIP_RESET    → visible=BLACK, về vị trí gốc
-                           ├──► SS_GAME_BULLET_RESET       → tất cả bullet ẩn
-                           ├──► SS_GAME_ENEMY_RESET        → tất cả enemy ẩn
-                           ├──► SS_GAME_EXPLOSION_RESET    → tất cả explosion ẩn
-                           ├──► SS_GAME_BORDER_RESET       → border ẩn
-                           ├── ss_game_save_and_reset_score() → lưu score vào EEPROM
-                           ├── Timer TIME_TICK xóa (dừng vòng lặp game)
-                           └── Tạo Timer one-shot EXIT (~1-2 giây delay)
+B
 Tại sao cần Timer one-shot? Để player kịp thấy màn hình "YOU LOSE" trước khi chuyển sang Game Over screen. Nếu chuyển ngay, player sẽ không biết mình vừa thua.
 
-/home/hoangphuc/archery-game/resources/images/reset.png
+<p align="center">
+  <img src="resources/images/reset.png" alt="Sơ đồ khởi tạo" width="800"/>
+</p>
+
+
 
 GIAI ĐOẠN 4 — EXIT (Chuyển màn hình)
 Timer one-shot ──SS_GAME_EXIT──► Screen
@@ -140,32 +123,8 @@ Timer one-shot ──SS_GAME_EXIT──► Screen
                                        → chuyển sang màn hình Game Over
                                           (Restart / Charts / Home)
 
-3. Pseudo-flow toàn hệ thống
-[SCREEN_ENTRY]
-  → Setup tất cả object
-  → Bật Timer 100ms
-  → GAME_ON
-
-[mỗi 100ms] ──────────────────────────────┐
-  TIME_TICK                                │
-    → UPDATE spaceship                     │
-    → RUN bullet (di chuyển)              │
-    → RUN enemy (di chuyển)              │
-    → DETONATOR (kiểm tra va chạm)       │
-    → UPDATE explosion (animation)        │
-    → BORDER_UPDATE (tăng độ khó)        │
-    → CHECK_GAME_OVER                     │
-         ├── chưa chạm → lặp lại ────────┘
-         └── chạm border → RESET
-
-[RESET]
-  → Ẩn tất cả object
-  → Lưu score
-  → Dừng Timer chính
-  → Bật Timer one-shot
-
-[EXIT - sau ~1-2 giây]
-  → Chuyển sang scr_game_over
+3
+[
 
 
 ### Ghi chú:
