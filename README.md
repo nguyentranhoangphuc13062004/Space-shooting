@@ -1,6 +1,9 @@
 # Space Shooting Game - Build on AK Embedded Base Kit
 
+https://github.com/user-attachments/assets/2cf365c7-6088-4c70-a695-e0a115350202
+
 <hr>
+
 
 ## I. Giới thiệu
 
