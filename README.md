@@ -1,9 +1,18 @@
-# Space Shooting Game - Build on AK Embedded Base Kit
+<div align="center">
+
+# 🚀 Space Shooting Game
+### Built on AK Embedded Base Kit · STM32L151
+
+[![Language](https://img.shields.io/badge/Language-C-00599C?style=flat-square&logo=c)](https://github.com/nguyentranhoangphuc13062004/Space-shooting)
+[![Platform](https://img.shields.io/badge/Platform-STM32L151-03234B?style=flat-square&logo=stmicroelectronics&logoColor=white)](https://epcb.vn/products/ak-embedded-base-kit-lap-trinh-nhung-vi-dieu-khien-mcu)
+[![License](https://img.shields.io/badge/License-MIT-green?style=flat-square)](LICENSE)
+[![Architecture](https://img.shields.io/badge/Architecture-Event--Driven-orange?style=flat-square)]()
+
+</div>
 
 https://github.com/user-attachments/assets/2cf365c7-6088-4c70-a695-e0a115350202
 
 <hr>
-
 
 ## I. Giới thiệu
 
@@ -19,6 +28,17 @@ Space Shooting Game là một tựa game chạy trên AK Embedded Base Kit. Đư
 KIT tích hợp LCD **OLED 1.3", 3 nút nhấn, và 1 loa Buzzer phát nhạc**, với các trang bị này thì đã đủ để học hệ thống event-driven thông qua thực hành thiết kế máy chơi game.
 
 KIT cũng tích hợp **RS485**, **NRF24L01+**, và **Flash** lên đến 32MB, thích hợp cho prototype các ứng dụng thực tế trong hệ thống nhúng hay sử dụng như: truyền thông có dây, không dây wireless, các ứng dụng lưu trữ data logger,...
+
+#### Memory Map
+
+| Địa chỉ | Vùng nhớ | Mô tả |
+|---|---|---|
+| `0x08000000` | **Boot** | [ak-base-kit-stm32l151-boot.bin](https://github.com/ak-embedded-software/ak-base-kit-stm32l151/blob/main/hardware/bin/ak-base-kit-stm32l151-boot.bin) |
+| `0x08002000` | **BSF** | Shared memory giữa Boot và Application |
+| `0x08003000` | **Application** | [ak-base-kit-stm32l151-application.bin](https://github.com/ak-embedded-software/ak-base-kit-stm32l151/blob/main/hardware/bin/ak-base-kit-stm32l151-application.bin) |
+
+> 📐 **Schematic:** [schematic-ak-embedded-base-kit-version-3.pdf](https://github.com/ak-embedded-software/ak-base-kit-stm32l151/blob/main/hardware/schematic/schematic-ak-embedded-base-kit-version-3.pdf)  
+> 🛒 **Mua kit:** [epcb.vn](https://epcb.vn/products/ak-embedded-base-kit-lap-trinh-nhung-vi-dieu-khien-mcu)
 
 ### 1.2 Mô tả trò chơi và đối tượng
 
@@ -99,13 +119,9 @@ Flow từng bước:
 GIAI ĐOẠN 2 — GAME PLAY (Vòng lặp game)
 Đây là trái tim của game. Mỗi 100ms Timer bắn TIME_TICK vào Screen, Screen lần lượt điều phối toàn bộ hệ thống.
 
-
 <p align="center">
   <img src="resources/images/gameplay.png" alt="Sơ đồ khởi tạo" width="800"/>
 </p>
-
-
-
 
 GIAI ĐOẠN 3 — RESET GAME (Xử lý Game Over)
 Trigger: Border phát hiện enemy.x ≤ border.x → gửi SS_GAME_RESET lên Screen.
@@ -115,8 +131,6 @@ Tại sao cần Timer one-shot? Để player kịp thấy màn hình "YOU LOSE" 
 <p align="center">
   <img src="resources/images/reset.png" alt="Sơ đồ khởi tạo" width="800"/>
 </p>
-
-
 
 GIAI ĐOẠN 4 — EXIT (Chuyển màn hình)
 Timer one-shot ──SS_GAME_EXIT──► Screen
@@ -129,9 +143,6 @@ Timer one-shot ──SS_GAME_EXIT──► Screen
 <p align="center">
   <img src="resources/images/exit.png" alt="Sơ đồ khởi tạo" width="800"/>
 </p>
-
-[
-
 
 ### Ghi chú:
 
@@ -546,6 +557,40 @@ BUZZER_PlayTones(tones_3beep);
 
 ---
 
+## V. Build & Flash
+
+```bash
+# Clone repo
+git clone https://github.com/nguyentranhoangphuc13062004/Space-shooting.git
+cd Space-shooting
+
+# Build
+make all
+
+# Cách 1: Flash qua ST-Link
+make flash
+
+# Cách 2: Flash qua USB với ak_flash (không cần ST-Link)
+ak_flash /dev/ttyUSB0 ak-base-kit-stm32l151-application.bin 0x08003000
+```
+
+> 💡 Tải **ak_flash** tại: [github.com/ak-embedded-software/ak-flash](https://github.com/ak-embedded-software/ak-flash)
+
+---
+
+## VI. Tài liệu tham khảo
+
+| Chủ đề | Link |
+|---|---|
+| Blog & Tutorial | [epcb.vn/blogs/ak-embedded-software](https://epcb.vn/blogs/ak-embedded-software) |
+| Event Driven: Task & Signal | [AK Embedded Base Kit - STM32L151](https://epcb.vn/blogs/ak-embedded-software/ak-embedded-base-kit-stm32l151-event-driven-task-signal) |
+| Base kit firmware | [ak-base-kit-stm32l151](https://github.com/ak-embedded-software/ak-base-kit-stm32l151) |
+| ak-flash tool | [ak-embedded-software/ak-flash](https://github.com/ak-embedded-software/ak-flash) |
+| Base project | [Archery Game](https://github.com/ak-embedded-software/archery-game) by AK Embedded Software |
+| Mua kit | [epcb.vn](https://epcb.vn/products/ak-embedded-base-kit-lap-trinh-nhung-vi-dieu-khien-mcu) |
+
+---
+
 ## About
 
 Space Shooting Game built on AK Embedded Base Kit.
@@ -553,3 +598,6 @@ Space Shooting Game built on AK Embedded Base Kit.
 Developed by: **[nguyentranhoangphuc13062004](https://github.com/nguyentranhoangphuc13062004)**
 
 Based on: **[Archery Game](https://github.com/ak-embedded-software/archery-game)** by AK Embedded Software
+
+[![GitHub](https://img.shields.io/badge/GitHub-nguyentranhoangphuc13062004-181717?style=flat-square&logo=github)](https://github.com/nguyentranhoangphuc13062004)
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-phuchoang1306-0A66C2?style=flat-square&logo=linkedin)](https://www.linkedin.com/in/phuchoang1306/)
